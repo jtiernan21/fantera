@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantera — Football Belongs to the Fans</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Bebas Neue', 'sans-serif'],
+                        heading: ['Anton', 'sans-serif'],
+                        body: ['DM Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        base: '#0a0a0a',
+                        surface: '#111111',
+                        coral: '#F46D5B',
+                        teal: '#0d3d3d',
+                        cyan: '#5ce1e6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --color-base: #0a0a0a;
+            --color-surface: #111111;
+            --color-text: #ffffff;
+            --color-text-muted: #888888;
+            --color-coral: #F46D5B;
+            --color-teal: #0d3d3d;
+            --color-cyan: #5ce1e6;
+            --color-glass: rgba(255,255,255,0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--color-base);
+            color: var(--color-text);
+            overflow-x: hidden;
+        }
+
+        /* Noise texture overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Display title style - Futura-like */
+        .title-display {
+            font-family: 'Bebas Neue', sans-serif;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Logo image */
+        .logo-img {
+            height: 46px;
+            width: auto;
+        }
+
+        .logo-img-footer {
+            height: 38px;
+            width: auto;
+        }
+
+        /* Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--color-text);
+            text-decoration: none;
+            font-size: 1.25rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--color-coral);
+        }
+
+        .btn-launch {
+            background: var(--color-coral);
+            color: white;
+            padding: 0.75rem 1.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(244, 109, 91, 0.4), 0 0 40px rgba(244, 109, 91, 0.2);
+        }
+
+        .btn-launch:hover {
+            box-shadow: 0 0 30px rgba(244, 109, 91, 0.6), 0 0 60px rgba(244, 109, 91, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--color-surface);
+            padding: 2rem;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 200;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 150;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+            .mobile-menu {
+                display: block;
+            }
+            .mobile-menu-overlay {
+                display: block;
+                pointer-events: none;
+            }
+            .mobile-menu-overlay.active {
+                pointer-events: auto;
+            }
+        }
+
+        /* Hero section */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('Hero.png');
+            background-size: cover;
+            background-position: 66% center;
+            background-repeat: no-repeat;
+        }
+
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(10,10,10,0.2) 0%,
+                rgba(10,10,10,0.4) 60%,
+                rgba(10,10,10,0.95) 90%,
+                rgba(10,10,10,1) 100%
+            );
+        }
+
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-title {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-subtitle {
+            color: rgba(255,255,255,0.85);
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            max-width: 500px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+        }
+
+        /* Staggered fade-in animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .fade-in-1 { animation-delay: 0.1s; }
+        .fade-in-2 { animation-delay: 0.2s; }
+        .fade-in-3 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Section styling */
+        section {
+            padding: 6rem 2rem;
+            position: relative;
+        }
+
+        .section-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-coral), transparent);
+            border-radius: 2px;
+        }
+
+        /* Flagship Application Section */
+        #product {
+            padding: 4rem 2rem 6rem;
+            background: var(--color-base);
+        }
+
+        .flagship-image {
+            width: 100%;
+            margin: 3rem auto;
+            display: block;
+        }
+
+        .flagship-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stat-item:nth-child(2) {
+                border-right: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .stat-item {
+                border-right: none !important;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .stat-item:last-child {
+                border-bottom: none;
+            }
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-item:last-child {
+            border-right: none;
+        }
+
+        .stat-label {
+            color: var(--color-coral);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: capitalize;
+        }
+
+        .stat-value {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        /* Clubs grid section */
+        #clubs {
+            padding: 6rem 2rem;
+        }
+
+        .clubs-grid-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .clubs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            margin-top: 3rem;
+            background: rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .clubs-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .clubs-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .club-cell {
+            background: var(--color-base);
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            aspect-ratio: 1;
+        }
+
+        .club-cell:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .club-cell img {
+            max-width: 70%;
+            max-height: 70%;
+            object-fit: contain;
+            filter: grayscale(100%) brightness(0.8);
+            transition: filter 0.3s ease;
+        }
+
+        .club-cell:hover img {
+            filter: grayscale(0%) brightness(1);
+        }
+
+        .club-cell.view-more {
+            background: var(--color-base);
+        }
+
+        .club-cell.view-more a {
+            color: var(--color-coral);
+            text-decoration: none;
+            font-family: 'Anton', sans-serif;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            transition: opacity 0.3s;
+        }
+
+        .club-cell.view-more:hover a {
+            opacity: 0.8;
+        }
+
+        /* Closing section */
+        #closing {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .closing-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('Comet.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .closing-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(10,10,10,1) 0%,
+                rgba(10,10,10,0.8) 20%,
+                rgba(10,10,10,0.4) 50%,
+                rgba(10,10,10,0.6) 100%
+            );
+        }
+
+        .closing-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .closing-title {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--color-base);
+            padding: 4rem 2rem 2rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links-group {
+            display: flex;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .footer-top {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            .footer-links-group {
+                gap: 2rem;
+            }
+        }
+
+        .footer-logo-section {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .footer-section h4 {
+            font-family: 'Anton', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-link {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.9375rem;
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: var(--color-text);
+        }
+
+        /* Focus states for accessibility */
+        a:focus-visible,
+        button:focus-visible {
+            outline: 2px solid var(--color-coral);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay" aria-hidden="true"></div>
+
+    <!-- Navigation -->
+    <header>
+        <nav class="nav-container" role="navigation" aria-label="Main navigation">
+            <a href="#">
+                <img src="Fantera Logo.png" alt="Fantera" class="logo-img">
+            </a>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Stats</a>
+                <a href="#" class="nav-link">Docs</a>
+                <a href="#" class="btn-launch">Launch App</a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Mobile menu overlay -->
+    <div class="mobile-menu-overlay" aria-hidden="true"></div>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Mobile navigation">
+        <button class="mobile-menu-btn" aria-label="Close menu" style="position: absolute; top: 1rem; right: 1rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 3rem;">
+            <a href="#" class="nav-link" style="font-size: 1.25rem;">Stats</a>
+            <a href="#" class="nav-link" style="font-size: 1.25rem;">Docs</a>
+            <a href="#" class="btn-launch" style="text-align: center; margin-top: 1rem;">Launch App</a>
+        </div>
+    </div>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero">
+            <div class="hero-bg" aria-hidden="true"></div>
+
+            <div class="hero-content">
+                <h1 class="hero-title fade-in fade-in-1">Football Belongs<br>to the Fans</h1>
+                <p class="hero-subtitle fade-in fade-in-2">
+                    Buy stakes in the clubs you love,<br>
+                    powered by a platform that puts fans first.
+                </p>
+                <a href="#" class="btn-launch fade-in fade-in-3">Launch App</a>
+            </div>
+        </section>
+
+        <!-- Flagship Application Section -->
+        <section id="product">
+            <div class="section-container">
+                <div class="reveal" style="text-align: center;">
+                    <h2 class="section-title" style="display: inline-block;">Flagship Application</h2>
+                </div>
+
+                <div class="flagship-image reveal">
+                    <img src="App Image.png" alt="Fantera App">
+                </div>
+
+                <div class="stats-grid reveal">
+                    <div class="stat-item">
+                        <div class="stat-label">Invested</div>
+                        <div class="stat-value">$105 Million</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Users</div>
+                        <div class="stat-value">12,801</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Block Time</div>
+                        <div class="stat-value">0.07 seconds</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Avg Spread</div>
+                        <div class="stat-value">15 bps</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Clubs Section -->
+        <section id="clubs">
+            <div class="section-container" style="text-align: center;">
+                <h2 class="section-title reveal" style="display: inline-block;">Clubs on Fantera</h2>
+            </div>
+
+            <div class="clubs-grid-container">
+                <div class="clubs-grid reveal">
+                    <div class="club-cell"><img src="Club Logos/Manu.jpg" alt="Manchester United"></div>
+                    <div class="club-cell"><img src="Club Logos/BVB.png" alt="Borussia Dortmund"></div>
+                    <div class="club-cell"><img src="Club Logos/Juve.png" alt="Juventus"></div>
+                    <div class="club-cell"><img src="Club Logos/Porto.jpg" alt="FC Porto"></div>
+                    <div class="club-cell"><img src="Club Logos/Benfica.jpg" alt="SL Benfica"></div>
+                    <div class="club-cell"><img src="Club Logos/Braga.jpg" alt="SC Braga"></div>
+                    <div class="club-cell"><img src="Club Logos/Sporting.jpg" alt="Sporting CP"></div>
+                    <div class="club-cell"><img src="Club Logos/Roma.jpg" alt="AS Roma"></div>
+                    <div class="club-cell"><img src="Club Logos/Lazio.jpg" alt="SS Lazio"></div>
+                    <div class="club-cell"><img src="Club Logos/Celtic.jpg" alt="Celtic FC"></div>
+                    <div class="club-cell"><img src="Club Logos/Lyon.jpg" alt="Olympique Lyon"></div>
+                    <div class="club-cell"><img src="Club Logos/Ajax.jpg" alt="AFC Ajax"></div>
+                    <div class="club-cell"><img src="Club Logos/Copenhagen.jpg" alt="FC Copenhagen"></div>
+                    <div class="club-cell"><img src="Club Logos/America.jpg" alt="Club America"></div>
+                    <div class="club-cell"><img src="Club Logos/Gala.jpg" alt="Galatasaray"></div>
+                    <div class="club-cell view-more"><a href="#">View More</a></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Closing Section -->
+        <section id="closing">
+            <div class="closing-bg" aria-hidden="true"></div>
+
+            <div class="closing-content reveal">
+                <h2 class="closing-title">Take Back Football</h2>
+                <a href="#" class="btn-launch">Launch App</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-logo-section">
+                    <img src="Fantera Logo.png" alt="Fantera" class="logo-img-footer">
+                </div>
+                <div class="footer-links-group">
+                    <div class="footer-section">
+                        <h4>Resources</h4>
+                        <ul>
+                            <li><a href="#" class="footer-link">Terms</a></li>
+                            <li><a href="#" class="footer-link">Privacy</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Data</h4>
+                        <ul>
+                            <li><a href="#" class="footer-link">Audits</a></li>
+                            <li><a href="#" class="footer-link">Analytics</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Community</h4>
+                        <ul>
+                            <li><a href="#" class="footer-link">X</a></li>
+                            <li><a href="#" class="footer-link">Discord</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#" class="footer-link">Blog</a></li>
+                            <li><a href="#" class="footer-link">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+        const mobileMenuCloseBtn = mobileMenu.querySelector('.mobile-menu-btn');
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('active');
+            mobileMenuOverlay.classList.add('active');
+            mobileMenuBtn.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('active');
+            mobileMenuOverlay.classList.remove('active');
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuBtn.addEventListener('click', openMobileMenu);
+        mobileMenuCloseBtn.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+
+        // Close mobile menu when clicking links
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // Scroll reveal with IntersectionObserver
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => {
+            revealObserver.observe(el);
+        });
+    </script>
+</body>
+</html>
