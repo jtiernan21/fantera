@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Sora, DM_Sans, Bebas_Neue } from "next/font/google";
 import PrivyClientProvider from "@/components/providers/PrivyClientProvider";
+import QueryProvider from "@/components/providers/QueryProvider";
 import "./globals.css";
 
 const sora = Sora({
@@ -40,7 +41,9 @@ export default function RootLayout({
       className={`${sora.variable} ${dmSans.variable} ${bebasNeue.variable} dark antialiased`}
     >
       <body className="bg-base text-text font-body">
-        <PrivyClientProvider>{children}</PrivyClientProvider>
+        <PrivyClientProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </PrivyClientProvider>
       </body>
     </html>
   );

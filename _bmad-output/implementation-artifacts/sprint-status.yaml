@@ -1,0 +1,97 @@
+# generated: 2026-02-07
+# project: CC4D
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog -> in-progress: Automatically when first story is created (via create-story)
+#   - in-progress -> done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-02-07
+project: CC4D
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # === Epic 1: User Onboarding & Club Marketplace ===
+  epic-1: in-progress
+  1-1-project-foundation-and-design-system: done
+  1-2-user-registration-and-authentication: done
+  1-3-lightweight-identity-verification: done
+  1-4-club-marketplace: done
+  1-5-club-detail-page: done
+  1-6-real-time-price-feed: done
+  1-7-club-search-and-filter: done
+  epic-1-retrospective: optional
+
+  # === Epic 2: Purchase Shares & Ownership Certificate ===
+  epic-2: backlog
+  2-1-order-data-model-and-api-foundation: backlog
+  2-2-payment-processing-integration: backlog
+  2-3-brokerage-execution-integration: backlog
+  2-4-token-minting-and-collateral-recording: backlog
+  2-5-buy-orchestration-pipeline-and-transaction-sheet: backlog
+  2-6-processing-screen-and-error-handling: backlog
+  2-7-ownership-card-and-card-reveal: backlog
+  2-8-certificate-sharing: backlog
+  epic-2-retrospective: optional
+
+  # === Epic 3: Portfolio Dashboard & Performance Tracking ===
+  epic-3: backlog
+  3-1-portfolio-api-and-holdings-data: backlog
+  3-2-portfolio-donut-chart: backlog
+  3-3-holdings-list: backlog
+  3-4-transaction-history: backlog
+  3-5-collateral-verification: backlog
+  epic-3-retrospective: optional
+
+  # === Epic 4: Sell Shares & Redemption ===
+  epic-4: backlog
+  4-1-sell-orchestration-pipeline: backlog
+  4-2-sell-transaction-sheet: backlog
+  4-3-sell-processing-and-confirmation: backlog
+  4-4-fund-withdrawal: backlog
+  epic-4-retrospective: optional
+
+  # === Epic 5: Wallet & Fund Management ===
+  epic-5: backlog
+  5-1-wallet-balance-api-and-display: backlog
+  5-2-fund-deposits: backlog
+  5-3-wallet-transaction-history: backlog
+  5-4-managed-wallet-security: backlog
+  5-5-external-wallet-connection-walletconnect: backlog
+  epic-5-retrospective: optional
+
+  # === Cross-Cutting: E2E Test Stories ===
+  # (Depends on: respective epic completion)
+  e2e-1-onboarding-e2e-test: backlog
+  e2e-2-buy-flow-e2e-test: backlog
+  e2e-3-portfolio-e2e-test: backlog
+  e2e-4-sell-flow-e2e-test: backlog

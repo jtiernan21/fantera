@@ -30,3 +30,32 @@ model User {
 
   @@map("users")
 }
+
+model Club {
+  id          String   @id @default(cuid())
+  name        String
+  ticker      String   @unique
+  exchange    String
+  crestUrl    String   @map("crest_url")
+  colorConfig Json     @map("color_config")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  prices Price[]
+
+  @@map("clubs")
+}
+
+model Price {
+  id        String   @id @default(cuid())
+  clubId    String   @map("club_id")
+  price     Float
+  changePct Float    @map("change_pct")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  club Club @relation(fields: [clubId], references: [id])
+
+  @@unique([clubId])
+  @@map("prices")
+}
